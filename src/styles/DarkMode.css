@@ -1,0 +1,170 @@
+ /* Dark Mode Styles */
+ /* .dark-mode {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+  } */
+
+ .dark-mode {
+   background-color: #1a1a2e;
+   color: #ffffff;
+ }
+
+ .dark-mode .custom-navbar {
+   background-color: #242444;
+ }
+
+ .dark-mode button {
+   background-color: #6a11cb;
+   color: #fff;
+ }
+
+ .dark-mode button:hover {
+   background-color: #f4a261;
+ }
+
+
+ .light-mode .nav-link {
+   color: #333;
+ }
+
+ .light-mode .nav-link:hover {
+   color: #007bff;
+ }
+
+ .dark-mode .loading-spinner-container {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Add to DarkMode.css */
+
+/* Light mode scrollbar */
+.light-mode::-webkit-scrollbar {
+  width: 8px;
+}
+
+.light-mode::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.light-mode::-webkit-scrollbar-thumb {
+  background: #add8e6;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.light-mode::-webkit-scrollbar-thumb:hover {
+  background: #88c1d6;
+}
+
+/* Dark mode scrollbar */
+.dark-mode::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark-mode::-webkit-scrollbar-track {
+  background: #2d3748;
+  border-radius: 4px;
+}
+
+.dark-mode::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.dark-mode::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+
+/* Firefox scrollbar support */
+* {
+  scrollbar-width: thin;
+}
+
+.light-mode {
+  scrollbar-color: #add8e6 #f1f1f1;
+}
+
+.dark-mode {
+  scrollbar-color: #4a5568 #2d3748;
+}
+
+/* Dark Mode Navbar */
+.dark-mode .custom-navbar {
+  background-color: #1f1f3d; /* Warna lebih gelap untuk navbar */
+  color: #ffffff;
+}
+
+.dark-mode .custom-navbar a {
+  color: #ffffff; /* Warna teks link navbar */
+}
+
+.dark-mode .custom-navbar a:hover {
+  color: #a29bfe; /* Warna hover untuk link */
+}
+
+/* Light Mode Navbar */
+.light-mode .custom-navbar {
+  background-color: #ffffff; /* Warna terang untuk navbar */
+  color: #333333;
+}
+
+.light-mode .custom-navbar a {
+  color: #333333; /* Warna teks link navbar */
+}
+
+.light-mode .custom-navbar a:hover {
+  color: #007bff; /* Warna hover untuk link */
+}
+
+
+.dark-mode .portfolio-footer {
+  background-color: var(--dark-background);
+  color: var(--dark-text);
+}
+
+.dark-mode .portfolio-footer .social-links a {
+  color: var(--dark-text);
+}
+
+.dark-mode .portfolio-footer .social-links a:hover {
+  color: var(--primary-color);
+}
+Last edit
+
+ .dark-mode .custom-navbar {
+   background-color: #2c2c4e !important;
+ }
+
+ .dark-mode .main-content {
+   background-color: var(--bg-dark);
+   color: var(--text-dark);
+ }
+
+ .dark-mode .about-section {
+   background-color: #2a2a4a;
+ }
+
+ .dark-mode .projects-section,
+ .dark-mode .skills-section {
+   background-color: #242444;
+ }
+
+ .dark-mode .project-card,
+ .dark-mode .skill-item {
+   background-color: var(--secondary-dark);
+   color: var(--text-dark);
+   border-color: #3a3a5a;
+ }
+
+ /* Light Mode Styles */
+ .light-mode {
+   background-color: var(--bg-light);
+   color: var(--text-light);
+ }
+
+ .light-mode .custom-navbar {
+   background-color: #f8f9fa !important;
+ }
