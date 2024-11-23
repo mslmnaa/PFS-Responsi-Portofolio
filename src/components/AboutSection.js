@@ -263,7 +263,7 @@ function AboutSection({ isDarkMode }) {
                   border-5 ${isDarkMode ? 'border-blue-600' : 'border-blue-500'}
                   shadow-xl transition-transform duration-300 transform hover:scale-105
                 `}
-                whileHover={{ scale: 1.05, rotate: 5 }}
+                whileHover={{ scale: 1.05 }}
               />
               <motion.div
                 className="absolute -bottom-4 -right-4 bg-blue-500 p-3 rounded-full shadow-lg"
