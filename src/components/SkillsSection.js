@@ -2,18 +2,43 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { Modal, Button, Form, Alert } from 'react-bootstrap';
+import { 
+  Bootstrap, 
+  Braces, 
+  FileEarmark, 
+  Database, 
+  Globe,
+  QuestionCircle
+} from 'react-bootstrap-icons';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Sample skills data
 const initialSkills = [
-  { id: 1, name: "React", level: 90 },
-  { id: 2, name: "TypeScript", level: 85 },
-  { id: 3, name: "Node.js", level: 80 },
- ];
+  { id: 1, name: "React", level: 90, icon: Bootstrap },
+  { id: 2, name: "TypeScript", level: 85, icon: Braces },
+  { id: 3, name: "Node.js", level: 80, icon: FileEarmark },
+  // { id: 4, name: "SQL", level: 75, icon: Database },
+  // { id: 5, name: "HTML/CSS", level: 95, icon: Globe },
+];
+
+// Status color mapping
+const statusColors = {
+  "Completed": "bg-green-100 text-green-800",
+  "Live": "bg-blue-100 text-blue-800",
+  "In Progress": "bg-yellow-100 text-yellow-800"
+};
 
 function SkillsSection({ isDarkMode }) {
   const [skills, setSkills] = useState(initialSkills);
   const [editingSkill, setEditingSkill] = useState(null);
-  const [newSkill, setNewSkill] = useState({ name: "", level: 50 });
+  const [newSkill, setNewSkill] = useState({ name: "", level: 50, icon: QuestionCircle });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [skillToDelete, setSkillToDelete] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertVariant, setAlertVariant] = useState("success");
+
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: false,
@@ -46,17 +71,33 @@ function SkillsSection({ isDarkMode }) {
   const addSkill = () => {
     if (newSkill.name.trim() !== "") {
       setSkills([...skills, { ...newSkill, id: Date.now() }]);
-      setNewSkill({ name: "", level: 50 });
+      setNewSkill({ name: "", level: 50, icon: QuestionCircle });
+      showAlertMessage("Skill added successfully!", "success");
     }
   };
 
   const updateSkill = (id, updatedSkill) => {
     setSkills(skills.map((skill) => (skill.id === id ? updatedSkill : skill)));
     setEditingSkill(null);
+    showAlertMessage("Skill updated successfully!", "success");
   };
 
   const deleteSkill = (id) => {
     setSkills(skills.filter((skill) => skill.id !== id));
+    setShowDeleteModal(false);
+    showAlertMessage("Skill deleted successfully!", "success");
+  };
+
+  const showDeleteConfirmation = (skill) => {
+    setSkillToDelete(skill);
+    setShowDeleteModal(true);
+  };
+
+  const showAlertMessage = (message, variant) => {
+    setAlertMessage(message);
+    setAlertVariant(variant);
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 3000);
   };
 
   return (
@@ -86,6 +127,19 @@ function SkillsSection({ isDarkMode }) {
           My <span className="text-blue-500">Skills</span>
         </motion.h2>
 
+        <AnimatePresence>
+          {showAlert && (
+            <motion.div
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -50 }}
+              className="w-full mb-4"
+            >
+              <Alert variant={alertVariant}>{alertMessage}</Alert>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <motion.div
           className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-8"
           variants={containerVariants}
@@ -104,7 +158,7 @@ function SkillsSection({ isDarkMode }) {
               variants={itemVariants}
             >
               {editingSkill === skill.id ? (
-                <form
+                <Form
                   onSubmit={(e) => {
                     e.preventDefault();
                     updateSkill(skill.id, {
@@ -113,53 +167,52 @@ function SkillsSection({ isDarkMode }) {
                       level: parseInt(e.target.level.value),
                     });
                   }}
-                  className="flex flex-col gap-2 sm:flex-row sm:items-end"
+                  className="flex flex-col gap-2"
                 >
-                  <div className="flex-1">
-                    <input
+                  <Form.Group>
+                    <Form.Control
                       type="text"
                       name="name"
                       defaultValue={skill.name}
                       className={`p-2 rounded-md w-full ${
                         isDarkMode
-                          ? "bg-gray-700 text-white"
-                          : "bg-gray-100 text-gray-900"
+                          ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                          : "bg-white text-gray-900 border-gray-300 placeholder-gray-500 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                       }`}
                     />
-                  </div>
-                  <div className="flex-1">
-                    <input
+                  </Form.Group>
+                  <Form.Group className="flex-1 flex flex-col">
+                    <Form.Label className={`mb-2 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
+                      Skill Level: {skill.level}%
+                    </Form.Label>
+                    <Form.Control
                       type="range"
                       name="level"
                       min="0"
                       max="100"
                       defaultValue={skill.level}
-                      className="w-full"
+                      className={`w-full ${
+                        isDarkMode
+                          ? "accent-blue-500 bg-gray-700"
+                          : "accent-blue-600 bg-gray-100"
+                      }`}
                     />
-                  </div>
-                  <div className="flex justify-end gap-2 mt-2 sm:mt-0">
-                    <motion.button
-                      type="submit"
-                      className="px-3 py-1 bg-green-500 text-white rounded-md"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
+                  </Form.Group>
+                  <div className="flex justify-end gap-2 mt-2">
+                    <Button variant="success" type="submit" size="sm">
                       Save
-                    </motion.button>
-                    <motion.button
-                      type="button"
-                      onClick={() => setEditingSkill(null)}
-                      className="px-3 py-1 bg-gray-500 text-white rounded-md"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
+                    </Button>
+                    <Button variant="secondary" size="sm" onClick={() => setEditingSkill(null)}>
                       Cancel
-                    </motion.button>
+                    </Button>
                   </div>
-                </form>
+                </Form>
               ) : (
                 <>
-                  <h3 className="text-lg font-semibold mb-2">{skill.name}</h3>
+                  <div className="flex items-center mb-2">
+                    <skill.icon className={`w-6 h-6 mr-2 ${isDarkMode ? "text-blue-400" : "text-blue-600"}`} />
+                    <h3 className="text-lg font-semibold">{skill.name}</h3>
+                  </div>
                   <div className="relative pt-1">
                     <div className="flex mb-2 items-center justify-between">
                       <div>
@@ -186,26 +239,20 @@ function SkillsSection({ isDarkMode }) {
                     </div>
                   </div>
                   <div className="flex justify-end gap-2 mt-2">
-                    <motion.button
+                    <Button
+                      variant="primary"
+                      size="sm"
                       onClick={() => setEditingSkill(skill.id)}
-                      className={`p-2 rounded-full ${
-                        isDarkMode ? "bg-gray-700" : "bg-gray-200"
-                      }`}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
                     >
-                      <FaEdit className="text-blue-500" />
-                    </motion.button>
-                    <motion.button
-                      onClick={() => deleteSkill(skill.id)}
-                      className={`p-2 rounded-full ${
-                        isDarkMode ? "bg-gray-700" : "bg-gray-200"
-                      }`}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
+                      <FaEdit />
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => showDeleteConfirmation(skill)}
                     >
-                      <FaTrash className="text-red-500" />
-                    </motion.button>
+                      <FaTrash />
+                    </Button>
                   </div>
                 </>
               )}
@@ -214,7 +261,7 @@ function SkillsSection({ isDarkMode }) {
         </motion.div>
 
         <motion.div
-          className={`p-4 rounded-xl shadow-lg ${
+          className={`p-6 rounded-xl shadow-lg ${
             isDarkMode
               ? "bg-gray-800 border border-gray-700"
               : "bg-white border border-gray-200"
@@ -222,61 +269,79 @@ function SkillsSection({ isDarkMode }) {
           variants={itemVariants}
         >
           <h3 className="text-lg font-semibold mb-4">Add New Skill</h3>
-          <form
+          <Form
             onSubmit={(e) => {
               e.preventDefault();
               addSkill();
             }}
-            className="flex flex-col gap-4 sm:flex-row sm:items-end"
+            className="flex flex-col gap-4"
           >
-            <div className="flex-1">
-              <input
+            <Form.Group>
+              <Form.Label>Skill Name</Form.Label>
+              <Form.Control
                 type="text"
                 value={newSkill.name}
                 onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })}
-                placeholder="Skill name"
+                placeholder="Enter skill name"
                 className={`p-2 rounded-md w-full ${
                   isDarkMode
-                    ? "bg-gray-700 text-white"
-                    : "bg-gray-100 text-gray-900"
+                    ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                    : "bg-white text-gray-900 border-gray-300 placeholder-gray-500 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                 }`}
               />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-4">
-                <input
-                  type="range"
-                  value={newSkill.level}
-                  onChange={(e) =>
-                    setNewSkill({ ...newSkill, level: parseInt(e.target.value) })
-                  }
-                  min="0"
-                  max="100"
-                  className="w-full"
-                />
-                <span
-                  className={`text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full ${
-                    isDarkMode
-                      ? "text-blue-200 bg-blue-900"
-                      : "text-blue-600 bg-blue-200"
-                  }`}
-                >
-                  {newSkill.level}%
-                </span>
-              </div>
-            </div>
-            <motion.button
+            </Form.Group>
+            <Form.Group className="flex-1 flex flex-col">
+              <Form.Label className={`mb-2 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
+                Skill Level: {newSkill.level}%
+              </Form.Label>
+              <Form.Control
+                type="range"
+                value={newSkill.level}
+                onChange={(e) =>
+                  setNewSkill({ ...newSkill, level: parseInt(e.target.value) })
+                }
+                min="0"
+                max="100"
+                className={`w-full ${
+                  isDarkMode
+                    ? "accent-blue-500 bg-gray-700"
+                    : "accent-blue-600 bg-gray-100"
+                }`}
+              />
+            </Form.Group>
+            <Button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md flex items-center justify-center gap-2 w-full sm:w-auto"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              variant="primary"
+              className={`w-full sm:w-auto px-4 py-2 ${
+                isDarkMode
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-blue-500 hover:bg-blue-600"
+              } text-white transition-all duration-300 rounded-md`}
             >
-              <FaPlus />
+              <FaPlus className="mr-2 inline" />
               Add Skill
-            </motion.button>
-          </form>
+            </Button>
+          </Form>
         </motion.div>
       </motion.div>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Deletion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete the skill "{skillToDelete?.name}"?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={() => deleteSkill(skillToDelete?.id)}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </motion.section>
   );
 }

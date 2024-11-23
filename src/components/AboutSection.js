@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import {
   FaDownload,
@@ -12,6 +12,8 @@ import { TypeAnimation } from 'react-type-animation';
 import { SparklesCore } from "./ui/sparkles";
 import { Spotlight } from "./ui/spotlight";
 import { useInView } from "react-intersection-observer";
+import { Modal, Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function AboutSection({ isDarkMode }) {
   const controls = useAnimation();
@@ -19,6 +21,7 @@ function AboutSection({ isDarkMode }) {
     threshold: 0.3,
     triggerOnce: false
   });
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (inView) {
@@ -105,6 +108,17 @@ function AboutSection({ isDarkMode }) {
     { Icon: FaTwitter, href: "https://x.com/mslmnaa", label: "Twitter" }
   ];
 
+  
+  const handleDownload = () => {
+    setShowModal(true);
+  };
+
+  const confirmDownload = () => {
+    setShowModal(false);
+    // Actual download logic here
+    window.location.href = "/assets/cv_salman.pdf";
+  };
+
   return (
     <motion.section 
       ref={ref}
@@ -139,7 +153,7 @@ function AboutSection({ isDarkMode }) {
           >
             <motion.h1
               variants={slideInFromLeft}
-              className="text-5xl font-bold mb-6 text-center lg:text-left w-full"
+              className="text-4xl sm:text-5xl font-bold mb-6 text-center lg:text-left w-full"
             >
               Hi, I'm <span className="text-blue-600">Salman</span>
             </motion.h1>
@@ -158,14 +172,14 @@ function AboutSection({ isDarkMode }) {
                   2000,
                 ]}
                 wrapper="h2"
-                className="text-3xl font-semibold text-blue-500"
+                className="text-2xl sm:text-3xl font-semibold text-blue-500"
                 repeat={Infinity}
               />
             </motion.div>
 
             <motion.p
               variants={fadeInUp}
-              className="text-lg mb-8 max-w-2xl text-center lg:text-left"
+              className="text-base sm:text-lg mb-8 max-w-2xl text-center lg:text-left"
             >
               A passionate full-stack developer with expertise in modern web technologies.
               I create scalable applications that solve real-world problems.
@@ -175,9 +189,8 @@ function AboutSection({ isDarkMode }) {
               variants={fadeInUp}
               className="flex flex-col sm:flex-row justify-center w-full gap-4 mb-8"
             >
-              <motion.a
-                href="/assets/cv_salman.pdf"
-                download
+              <motion.button
+                onClick={handleDownload}
                 className={`
                   no-underline w-full sm:w-auto px-6 py-3 rounded-full flex items-center justify-center gap-2
                   ${isDarkMode
@@ -190,7 +203,7 @@ function AboutSection({ isDarkMode }) {
               >
                 <FaDownload />
                 Download CV
-              </motion.a>
+              </motion.button>
 
               <motion.button
                 className={`
@@ -246,7 +259,7 @@ function AboutSection({ isDarkMode }) {
                 src="/img/salman2.png"
                 alt="Profile"
                 className={`
-                  w-64 h-64 md:w-80 md:h-80 rounded-full object-cover
+                  w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 rounded-full object-cover
                   border-5 ${isDarkMode ? 'border-blue-600' : 'border-blue-500'}
                   shadow-xl transition-transform duration-300 transform hover:scale-105
                 `}
@@ -265,8 +278,25 @@ function AboutSection({ isDarkMode }) {
           </motion.div>
         </div>
       </div>
+
+      {/* Download Confirmation Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Download CV</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to download the CV?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={confirmDownload}>
+            Download
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </motion.section>
   );
 }
 
 export default AboutSection;
+

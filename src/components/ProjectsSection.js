@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { motion, useAnimation, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { FaLink, FaCodeBranch } from "react-icons/fa";
-import { IoChevronBackCircle, IoChevronForwardCircle } from "react-icons/io5";
+import { BoxArrowUpRight, CodeSlash, ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 
 // Sample projects data
 const projects = [
@@ -14,27 +13,27 @@ const projects = [
     source: "https://github.com/username/ecommerce", 
     description: "A comprehensive e-commerce solution with advanced product filtering.",
     status: "Completed",
-    image: "/api/placeholder/400/320"
+    image: "/assets/myproject/nurse_c.png"
   },
   { 
     id: 2, 
-    title: "Personal Portfolio", 
-    tech: ["React", "Framer Motion"], 
+    title: "Virus Movement Game", 
+    tech: ["Java"], 
     demo: "https://portfolio-demo.com", 
     source: "https://github.com/username/portfolio", 
     description: "Interactive portfolio with smooth animations.",
     status: "Live",
-    image: "/api/placeholder/400/320"
+    image: "/assets/myproject/virus.png" 
   },
   { 
     id: 3, 
-    title: "Blog Platform", 
-    tech: ["Node.js", "Express"], 
+    title: "Portofolio", 
+    tech: ["Node.js", "JavaScript", "React"], 
     demo: "https://blog-platform.com", 
     source: "https://github.com/username/blog-platform", 
     description: "Full-featured blog platform with user authentication.",
     status: "In Progress",
-    image: "/api/placeholder/400/320"
+    image: "/assets/myproject/myportofolio.png"
   },
   { 
     id: 4, 
@@ -44,47 +43,7 @@ const projects = [
     source: "https://github.com/username/weather-app", 
     description: "Real-time weather application with location services.",
     status: "Live",
-    image: "/api/placeholder/400/320"
-  },
-  { 
-    id: 4, 
-    title: "Weather App", 
-    tech: ["React", "API"], 
-    demo: "https://weather-app.com", 
-    source: "https://github.com/username/weather-app", 
-    description: "Real-time weather application with location services.",
-    status: "Live",
-    image: "/api/placeholder/400/320"
-  },
-  { 
-    id: 4, 
-    title: "Weather App", 
-    tech: ["React", "API"], 
-    demo: "https://weather-app.com", 
-    source: "https://github.com/username/weather-app", 
-    description: "Real-time weather application with location services.",
-    status: "Live",
-    image: "/api/placeholder/400/320"
-  },
-  { 
-    id: 4, 
-    title: "Weather App", 
-    tech: ["React", "API"], 
-    demo: "https://weather-app.com", 
-    source: "https://github.com/username/weather-app", 
-    description: "Real-time weather application with location services.",
-    status: "Live",
-    image: "/api/placeholder/400/320"
-  },
-  { 
-    id: 4, 
-    title: "Weather App", 
-    tech: ["React", "API"], 
-    demo: "https://weather-app.com", 
-    source: "https://github.com/username/weather-app", 
-    description: "Real-time weather application with location services.",
-    status: "Live",
-    image: "/api/placeholder/400/320"
+    image: "/placeholder.svg?height=400&width=320"
   }
 ];
 
@@ -104,33 +63,9 @@ function ProjectSection({ isDarkMode }) {
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
-  const [projectsPerPage, setProjectsPerPage] = useState(3);
-  const [totalDisplayed, setTotalDisplayed] = useState(0); // New state for total displayed projects
-
-  useEffect(() => {
-    const handleResize = () => {
-      let newProjectsPerPage;
-      if (window.innerWidth < 640) {
-        newProjectsPerPage = 1;
-      } else if (window.innerWidth < 1024) {
-        newProjectsPerPage = 2;
-      } else {
-        newProjectsPerPage = 3;
-      }
-      setProjectsPerPage(newProjectsPerPage);
-      setTotalDisplayed(prevTotal => {
-        const newTotal = Math.floor(prevTotal / newProjectsPerPage) * newProjectsPerPage;
-        setCurrentPage(Math.floor(newTotal / newProjectsPerPage));
-        return newTotal;
-      });
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     if (inView) {
@@ -141,11 +76,18 @@ function ProjectSection({ isDarkMode }) {
   }, [controls, inView]);
 
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { 
+      opacity: 0,
+      y: 50
+    },
     visible: {
       opacity: 1,
+      y: 0,
       transition: {
-        delayChildren: 0.3,
+        type: "spring",
+        damping: 15,
+        stiffness: 100,
+        delayChildren: 0.2,
         staggerChildren: 0.1
       }
     }
@@ -157,9 +99,9 @@ function ProjectSection({ isDarkMode }) {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.5,
         type: "spring",
-        bounce: 0.4
+        damping: 15,
+        stiffness: 100
       }
     }
   };
@@ -170,35 +112,32 @@ function ProjectSection({ isDarkMode }) {
     return matchesSearch && matchesFilter;
   });
 
-  const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
-
-  const handlePrevPage = () => {
+  const handlePrev = () => {
     setDirection(-1);
-    setTotalDisplayed(prev => Math.max(0, prev - projectsPerPage));
-    setCurrentPage(prev => Math.max(0, prev - 1));
+    setCurrentIndex((prevIndex) => 
+      prevIndex === 0 ? filteredProjects.length - 1 : prevIndex - 1
+    );
   };
 
-  const handleNextPage = () => {
+  const handleNext = () => {
     setDirection(1);
-    setTotalDisplayed(prev => Math.min(filteredProjects.length, prev + projectsPerPage));
-    setCurrentPage(prev => Math.min(totalPages - 1, prev + 1));
+    setCurrentIndex((prevIndex) => 
+      prevIndex === filteredProjects.length - 1 ? 0 : prevIndex + 1
+    );
   };
 
-  const currentProjects = filteredProjects.slice(
-    totalDisplayed,
-    totalDisplayed + projectsPerPage
-  );
-
-  const handleDotClick = (index) => {
-    const newTotalDisplayed = index * projectsPerPage;
-    setDirection(newTotalDisplayed > totalDisplayed ? 1 : -1);
-    setTotalDisplayed(newTotalDisplayed);
-    setCurrentPage(index);
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
   };
+
+  const currentProject = filteredProjects[currentIndex];
 
   return (
     <motion.section 
       ref={ref}
+      initial="hidden"
+      animate={controls}
+      variants={containerVariants}
       className={`
         min-h-screen w-full flex flex-col justify-start items-center 
         py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden
@@ -209,8 +148,6 @@ function ProjectSection({ isDarkMode }) {
     >
       <motion.div 
         className="container mx-auto h-full flex flex-col max-w-7xl px-4 sm:px-6 lg:px-8"
-        initial="hidden"
-        animate={controls}
         variants={containerVariants}
       >
         <motion.h2 
@@ -224,7 +161,7 @@ function ProjectSection({ isDarkMode }) {
           className="flex flex-col sm:flex-row gap-4 mb-6 justify-center w-full"
           variants={itemVariants}
         >
-          <input
+          <motion.input
             type="text"
             placeholder="Search projects..."
             className={`
@@ -235,8 +172,9 @@ function ProjectSection({ isDarkMode }) {
             `}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            variants={itemVariants}
           />
-          <select
+          <motion.select
             className={`
               p-2 border rounded-lg w-full sm:w-64 
               ${isDarkMode 
@@ -245,55 +183,54 @@ function ProjectSection({ isDarkMode }) {
             `}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
+            variants={itemVariants}
           >
             <option value="">All Technologies</option>
             {[...new Set(projects.flatMap(p => p.tech))].map(tech => (
               <option key={tech} value={tech}>{tech}</option>
             ))}
-          </select>
+          </motion.select>
         </motion.div>
 
-        <div className="flex-grow relative">
-          {/* Navigation buttons - Adjusted to be half outside the card */}
-          <div className="absolute top-1/2 -left-4 -right-4 flex justify-between z-10 transform -translate-y-1/2">
+        <motion.div className="flex-grow relative" variants={itemVariants}>
+          {/* Navigation buttons */}
+          <div className="absolute top-1/2 left-0 right-0 flex justify-between z-10 transform -translate-y-1/2">
             <motion.button
               className={`
                 w-12 h-12 rounded-full flex items-center justify-center 
-                transition-all duration-300
+                transition-all duration-300 -ml-6
                 ${isDarkMode 
-                  ? 'bg-white/10 hover:bg-white/20 text-white/70 hover:text-white' 
-                  : 'bg-black/10 hover:bg-black/20 text-gray-700 hover:text-gray-900'}
-                shadow-md cursor-pointer
-                transform -translate-x-1/2
+                  ? 'bg-gray-800 text-white hover:bg-gray-700' 
+                  : 'bg-white text-gray-900 hover:bg-gray-100'}
+                shadow-lg cursor-pointer
               `}
-              onClick={handlePrevPage}
+              onClick={handlePrev}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >
-              <IoChevronBackCircle className="w-8 h-8" />
+              <ChevronLeft className="w-6 h-6" />
             </motion.button>
             
             <motion.button
               className={`
                 w-12 h-12 rounded-full flex items-center justify-center 
-                transition-all duration-300
+                transition-all duration-300 -mr-6
                 ${isDarkMode 
-                  ? 'bg-white/10 hover:bg-white/20 text-white/70 hover:text-white' 
-                  : 'bg-black/10 hover:bg-black/20 text-gray-700 hover:text-gray-900'}
-                shadow-md cursor-pointer
-                transform translate-x-1/2
+                  ? 'bg-gray-800 text-white hover:bg-gray-700' 
+                  : 'bg-white text-gray-900 hover:bg-gray-100'}
+                shadow-lg cursor-pointer
               `}
-              onClick={handleNextPage}
+              onClick={handleNext}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >
-              <IoChevronForwardCircle className="w-8 h-8" />
+              <ChevronRight className="w-6 h-6" />
             </motion.button>
           </div>
 
           <AnimatePresence custom={direction} mode="wait">
             <motion.div 
-              key={currentPage}
+              key={currentIndex}
               custom={direction}
               variants={{
                 enter: (direction) => ({
@@ -316,115 +253,172 @@ function ProjectSection({ isDarkMode }) {
                 x: { type: "spring", stiffness: 300, damping: 30 },
                 opacity: { duration: 0.2 }
               }}
-              className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+              className="w-full"
             >
-              {currentProjects.map((project) => (
-                <motion.div
-                  key={project.id}
-                  variants={itemVariants}
-                  className={`
-                    rounded-xl shadow-lg overflow-hidden
-                    ${isDarkMode 
-                      ? "bg-gray-800 border border-gray-700" 
-                      : "bg-white border border-gray-200"}
-                  `}
+              <motion.div
+                variants={itemVariants}
+                className={`
+                  rounded-xl shadow-lg overflow-hidden mx-auto max-w-xl
+                  ${isDarkMode 
+                    ? "bg-gray-800 border border-gray-700" 
+                    : "bg-white border border-gray-200"}
+                `}
+              >
+                <motion.div 
+                  className="relative h-40 overflow-hidden cursor-pointer"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  onClick={toggleFullscreen}
                 >
-                  <div 
-                    className="h-32 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${project.image})` }}
+                  <motion.div 
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: `url(${currentProject.image})` }}
+                    whileHover={{ scale: 1.2 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   />
-                  <div className="p-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-lg font-semibold">{project.title}</h3>
-                      <span 
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          statusColors[project.status]
-                        }`}
-                      >
-                        {project.status}
-                      </span>
-                    </div>
-                    <p className={`mb-3 text-sm ${
-                      isDarkMode ? "text-gray-300" : "text-gray-600"
-                    }`}>
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {project.tech.map((tech) => (
-                        <span
-                          key={tech}
-                          className={`px-2 py-1 rounded text-xs ${
-                            isDarkMode 
-                              ? "bg-gray-700 text-gray-300" 
-                              : "bg-gray-200 text-gray-800"
-                          }`}
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex gap-2">
-                      <motion.a
-                        href={project.demo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`
-                          px-3 py-1 rounded-lg flex-1 text-center flex items-center justify-center gap-1 
-                          ${isDarkMode 
-                            ? "bg-blue-600 hover:bg-blue-700" 
-                            : "bg-blue-500 hover:bg-blue-600"}
-                          text-white transition-all duration-300
-                        `}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <FaLink className="text-xs" />
-                        Demo
-                      </motion.a>
-                      <motion.a
-                        href={project.source}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`
-                          px-3 py-1 rounded-lg flex-1 text-center flex items-center justify-center gap-1 
-                          ${isDarkMode 
-                            ? "bg-gray-700 hover:bg-gray-600" 
-                            : "bg-gray-300 hover:bg-gray-400"}
-                          text-white transition-all duration-300
-                        `}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <FaCodeBranch className="text-xs" />
-                        Code
-                      </motion.a>
-                    </div>
-                  </div>
+                  <motion.div
+                    className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 transition-opacity duration-300"
+                    whileHover={{ opacity: 1 }}
+                  >
+                    <motion.span className="text-white text-lg font-semibold">
+                      Click to view full image
+                    </motion.span>
+                  </motion.div>
                 </motion.div>
-              ))}
+                <div className="p-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <motion.h3 
+                      className="text-xl font-semibold"
+                      variants={itemVariants}
+                    >
+                      {currentProject.title}
+                    </motion.h3>
+                    <motion.span 
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        statusColors[currentProject.status]
+                      }`}
+                      variants={itemVariants}
+                    >
+                      {currentProject.status}
+                    </motion.span>
+                  </div>
+                  <motion.p 
+                    className={`mb-3 text-sm ${
+                      isDarkMode ? "text-gray-300" : "text-gray-600"
+                    }`}
+                    variants={itemVariants}
+                  >
+                    {currentProject.description}
+                  </motion.p>
+                  <motion.div 
+                    className="flex flex-wrap gap-2 mb-4"
+                    variants={itemVariants}
+                  >
+                    {currentProject.tech.map((tech) => (
+                      <motion.span
+                        key={tech}
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          isDarkMode 
+                            ? "bg-gray-700 text-gray-300" 
+                            : "bg-gray-200 text-gray-800"
+                        }`}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {tech}
+                      </motion.span>
+                    ))}
+                  </motion.div>
+                  <motion.div 
+                    className="flex gap-4"
+                    variants={itemVariants}
+                  >
+                    <motion.a
+                      href={currentProject.demo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`
+                        px-3 py-1.5 rounded-lg flex-1 text-center flex items-center justify-center gap-1.5 text-sm
+                        ${isDarkMode 
+                          ? "bg-blue-600 text-white hover:bg-blue-700" 
+                          : "bg-blue-500 text-white hover:bg-blue-600"}
+                        transition-all duration-300
+                      `}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <BoxArrowUpRight className="w-4 h-4" />
+                      Demo
+                    </motion.a>
+                    <motion.a
+                      href={currentProject.source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`
+                        px-3 py-1.5 rounded-lg flex-1 text-center flex items-center justify-center gap-1.5 text-sm
+                        ${isDarkMode 
+                          ? "bg-gray-700 text-white hover:bg-gray-600" 
+                          : "bg-gray-200 text-gray-800 hover:bg-gray-300"}
+                        transition-all duration-300
+                      `}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <CodeSlash className="w-4 h-4" />
+                      Code
+                    </motion.a>
+                  </motion.div>
+                </div>
+              </motion.div>
             </motion.div>
           </AnimatePresence>
-        </div>
+        </motion.div>
 
         {/* Pagination dots */}
-        <div className="flex justify-center gap-3 mt-8">
-          {Array.from({ length: totalPages }).map((_, index) => (
+        <motion.div 
+          className="flex justify-center gap-3 mt-6"
+          variants={itemVariants}
+        >
+          {filteredProjects.map((_, index) => (
             <motion.div
               key={index}
               className={`
                 h-3 rounded-full cursor-pointer
-                ${currentPage === index 
-                  ? `w-8 ${isDarkMode ? 'bg-blue-400' : 'bg-blue-500'}` 
+                ${currentIndex === index 
+                  ? `w-6 ${isDarkMode ? 'bg-blue-400' : 'bg-blue-500'}` 
                   : `w-3 ${isDarkMode ? 'bg-gray-600' : 'bg-gray-300'}`
                 }
               `}
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.9 }}
-              onClick={() => handleDotClick(index)} // Updated onClick event
+              onClick={() => {
+                setDirection(index > currentIndex ? 1 : -1);
+                setCurrentIndex(index);
+              }}
             />
           ))}
-        </div>
+        </motion.div>
       </motion.div>
+
+      {isFullscreen && (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={toggleFullscreen}
+        >
+          <motion.img
+            src={currentProject.image}
+            alt={currentProject.title}
+            className="max-w-full max-h-full object-contain"
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0.8 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          />
+        </motion.div>
+      )}
     </motion.section>
   );
 }

@@ -1,45 +1,50 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  FaHome, 
-  FaProjectDiagram, 
-  FaCode, 
-  FaEnvelope, 
-  FaMoon, 
-  FaSun 
-} from 'react-icons/fa';
+import {
+  HouseFill,
+  Diagram3Fill,
+  CodeSlash,
+  EnvelopeFill,
+  Moon,
+  Sun
+} from 'react-bootstrap-icons';
 
-function PortfolioNavbar({ 
-  isDarkMode, 
-  toggleDarkMode, 
-  activeSection, 
-  setActiveSection 
+function PortfolioNavbar({
+  isDarkMode,
+  toggleDarkMode,
+  activeSection,
+  setActiveSection
+}: {
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+  activeSection: number;
+  setActiveSection: (index: number) => void;
 }) {
   // Navigation items configuration
   const navItems = [
-    { 
-      icon: <FaHome />, 
-      label: 'About', 
-      index: 0 
+    {
+      icon: <HouseFill className="w-5 h-5" />,
+      label: 'About',
+      index: 0
     },
-    { 
-      icon: <FaProjectDiagram />, 
-      label: 'Projects', 
-      index: 1 
+    {
+      icon: <Diagram3Fill className="w-5 h-5" />,
+      label: 'Projects',
+      index: 1
     },
-    { 
-      icon: <FaCode />, 
-      label: 'Skills', 
-      index: 2 
+    {
+      icon: <CodeSlash className="w-5 h-5" />,
+      label: 'Skills',
+      index: 2
     },
-    { 
-      icon: <FaEnvelope />, 
-      label: 'Contact', 
-      index: 3 
+    {
+      icon: <EnvelopeFill className="w-5 h-5" />,
+      label: 'Contact',
+      index: 3
     }
   ];
 
-  const handleNavigation = (index) => {
+  const handleNavigation = (index: number) => {
     setActiveSection(index);
     const container = document.querySelector('.sections-container');
     if (container) {
@@ -51,27 +56,27 @@ function PortfolioNavbar({
   };
 
   return (
-    <nav 
+    <nav
       className={`
         fixed top-0 left-0 w-full z-50 
         transition-all duration-300 
         bg-transparent 
       `}
-      style={{ 
-        backdropFilter: 'blur(10px)', 
-        WebkitBackdropFilter: 'blur(10px)' 
+      style={{
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)'
       }}
     >
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
           className={`
             text-xl font-bold transition-all
-            ${isDarkMode 
-              ? 'text-white/70 hover:text-white/100' 
+            ${isDarkMode
+              ? 'text-white/70 hover:text-white/100'
               : 'text-gray-800 hover:text-black'
             }
           `}
@@ -91,8 +96,8 @@ function PortfolioNavbar({
                 flex items-center space-x-2 
                 transition-all duration-300 
                 bg-transparent
-                ${activeSection === item.index 
-                  ? (isDarkMode ? 'text-blue-300' : 'text-blue-600') 
+                ${activeSection === item.index
+                  ? (isDarkMode ? 'text-blue-300' : 'text-blue-600')
                   : isDarkMode
                     ? 'text-white/50 hover:text-white/80'
                     : 'text-gray-600 hover:text-gray-900'
@@ -111,13 +116,13 @@ function PortfolioNavbar({
             className={`
               p-2 rounded-full transition-all duration-300
               bg-transparent right-10
-              ${isDarkMode 
-                ? 'text-white/50 hover:text-yellow-400' 
+              ${isDarkMode
+                ? 'text-white/50 hover:text-yellow-400'
                 : 'text-gray-600 hover:text-yellow-500'
               }
             `}
           >
-            {isDarkMode ? <FaSun /> : <FaMoon />}
+            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </motion.button>
         </div>
       </div>
@@ -126,3 +131,4 @@ function PortfolioNavbar({
 }
 
 export default React.memo(PortfolioNavbar);
+
